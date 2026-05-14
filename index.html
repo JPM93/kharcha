@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kharcha Tracker | ProWorkWay.com</title>
+<title>Kharcha Tracker | ProWorkWay</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -202,6 +202,52 @@ body {
 }
 .icon-btn:hover { border-color: var(--teal); color: var(--teal); }
 .icon-btn.danger:hover { border-color: var(--rose); color: var(--rose); }
+
+/* ─── CATEGORY BUDGET BAR ───────────────────────────────────────── */
+.cat-budget-bar {
+  padding: 10px 16px 8px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8,20,21,.5);
+}
+.cat-budget-nums {
+  display: flex; flex-wrap: wrap;
+  margin-bottom: 7px;
+}
+.cat-bnum {
+  flex: 1; min-width: 70px;
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 4px 8px;
+  border-right: 1px solid var(--border);
+}
+.cat-bnum:first-child { padding-left: 0; }
+.cat-bnum:last-child { border-right: none; }
+.cat-bnum-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+.cat-bnum-val { font-family: 'Fraunces', serif; font-size: 13px; font-weight: 700; }
+.cat-bnum-val.v-budget { color: var(--peacock); }
+.cat-bnum-val.v-spent  { color: var(--teal); }
+.cat-bnum-val.v-left   { color: var(--emerald); }
+.cat-bnum-val.v-over   { color: var(--rose); }
+.cat-bnum-val.v-zero   { color: var(--muted); }
+.cat-prog-track { background: var(--surface3); border-radius: 99px; height: 4px; overflow: hidden; }
+.cat-prog-fill  { height: 100%; border-radius: 99px; transition: width .4s ease; }
+
+/* ─── TOAST ─────────────────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--surface); border: 1px solid var(--rose);
+  color: var(--text); border-radius: 10px;
+  padding: 12px 20px; font-size: 12px; z-index: 999;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+  opacity: 0; max-width: 340px; text-align: center;
+  display: flex; align-items: center; gap: 10px; pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast-icon { font-size: 18px; flex-shrink: 0; }
+.toast-body { text-align: left; }
+.toast-title { font-weight: 600; color: var(--rose); margin-bottom: 2px; }
+.toast-msg { font-size: 10px; color: var(--text2); }
 
 /* ─── ITEM ROW ──────────────────────────────────────────────────── */
 .items-list { padding: 4px 0; }
@@ -492,14 +538,28 @@ body {
   </div>
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-icon">⚠️</div>
+  <div class="toast-body">
+    <div class="toast-title" id="toast-title"></div>
+    <div class="toast-msg" id="toast-msg"></div>
+  </div>
+</div>
+
 <!-- ADD CATEGORY -->
 <div class="modal-overlay" id="add-category-modal">
   <div class="modal">
-    <h2>Add Category</h2>
+    <h2 id="cat-modal-title">Add Category</h2>
+    <input type="hidden" id="edit-cat-id-modal">
     <div class="fg"><label>Category Name *</label><input type="text" id="cat-name-input" placeholder="e.g. For Baby"></div>
+    <div class="fg">
+      <label>Category Budget (₹) <span style="color:var(--muted);font-size:9px">— optional, 0 = no limit</span></label>
+      <input type="number" id="cat-budget-input" placeholder="0" step="0.01" min="0" value="0">
+    </div>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal('add-category-modal')">Cancel</button>
-      <button class="btn primary" onclick="addCategory()">Add</button>
+      <button class="btn primary" onclick="saveCategory()">Save</button>
     </div>
   </div>
 </div>
@@ -822,6 +882,41 @@ function renderOverview(){
 }
 
 // ─── CATEGORIES ──────────────────────────────────────────
+function catSpent(cat){
+  return cat.items.filter(i=>i.status==='bought').reduce((s,i)=>s+(i.prices.actual||0)*(i.qty||1),0);
+}
+
+function renderCatBudgetBar(cat){
+  const budget = cat.budget || 0;
+  if(!budget) return '';
+  const spent = catSpent(cat);
+  const left = budget - spent;
+  const over = spent > budget ? spent - budget : 0;
+  const pct = Math.min(100, (spent/budget)*100);
+  const isOver = spent > budget;
+  const barColor = isOver ? 'var(--rose)' : pct > 80 ? 'var(--gold)' : 'linear-gradient(90deg,var(--teal),var(--peacock))';
+  return `
+    <div class="cat-budget-bar">
+      <div class="cat-budget-nums">
+        <div class="cat-bnum">
+          <span class="cat-bnum-label">Budget</span>
+          <span class="cat-bnum-val v-budget">₹${fmt(budget)}</span>
+        </div>
+        <div class="cat-bnum">
+          <span class="cat-bnum-label">Spent</span>
+          <span class="cat-bnum-val v-spent">₹${fmt(spent)}</span>
+        </div>
+        <div class="cat-bnum">
+          <span class="cat-bnum-label">${isOver ? 'Over!' : 'Remaining'}</span>
+          <span class="cat-bnum-val ${isOver ? 'v-over' : left===0 ? 'v-zero' : 'v-left'}">₹${fmt(isOver ? over : left)}</span>
+        </div>
+      </div>
+      <div class="cat-prog-track">
+        <div class="cat-prog-fill" style="width:${pct}%;background:${barColor}"></div>
+      </div>
+    </div>`;
+}
+
 function renderCategories(){
   const md=monthData();
   const cont=document.getElementById('cat-container');
@@ -837,10 +932,12 @@ function renderCategories(){
           <span class="cat-badge">${bought}/${cat.items.length} · ₹${fmt(total)}</span>
         </div>
         <div class="cat-actions">
+          <button class="icon-btn" onclick="openEditCat('${cat.id}')">✎</button>
           <button class="icon-btn" onclick="openAddItem('${cat.id}')">+ Item</button>
           <button class="icon-btn danger" onclick="deleteCat('${cat.id}')">✕</button>
         </div>
       </div>
+      ${renderCatBudgetBar(cat)}
       <div class="items-list">
         ${items.length===0?'<div class="empty">No items.</div>':items.map(i=>renderItemRow(cat.id,i)).join('')}
       </div>
@@ -1064,13 +1161,34 @@ function renderReports(){
 // ════════════════════════════════════════════════════════
 // ACTIONS — SHOPPING
 // ════════════════════════════════════════════════════════
+function showToast(title, msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-title').textContent=title;
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.classList.remove('show'),4000);
+}
+
 function cycleStatus(catId,itemId,next){
   const md=monthData();
-  const item=md.categories.find(c=>c.id===catId)?.items.find(i=>i.id===itemId);
+  const cat=md.categories.find(c=>c.id===catId);
+  const item=cat?.items.find(i=>i.id===itemId);
   if(!item) return;
   item.status=next;
   if(next==='bought'&&!item.boughtDate) item.boughtDate=new Date().toISOString().slice(0,10);
   render();
+  // Check over-budget after marking bought
+  if(next==='bought' && cat && cat.budget > 0){
+    const spent=catSpent(cat);
+    if(spent > cat.budget){
+      const over=spent - cat.budget;
+      showToast(
+        `${cat.name}: Budget Exceed!`,
+        `Budget ₹${fmt(cat.budget)} · Spent ₹${fmt(spent)} · Over by ₹${fmt(over)}`
+      );
+    }
+  }
 }
 
 function quickAdd(catId){
@@ -1144,13 +1262,39 @@ function deleteItem(catId,itemId){
   render();
 }
 
-function addCategory(){
+function openAddCat(){
+  document.getElementById('cat-modal-title').textContent='Add Category';
+  document.getElementById('edit-cat-id-modal').value='';
+  document.getElementById('cat-name-input').value='';
+  document.getElementById('cat-budget-input').value='0';
+  openModal('add-category-modal');
+}
+function openEditCat(catId){
+  const cat=monthData().categories.find(c=>c.id===catId);
+  if(!cat) return;
+  document.getElementById('cat-modal-title').textContent='Edit Category';
+  document.getElementById('edit-cat-id-modal').value=catId;
+  document.getElementById('cat-name-input').value=cat.name;
+  document.getElementById('cat-budget-input').value=cat.budget||0;
+  openModal('add-category-modal');
+}
+function saveCategory(){
   const name=document.getElementById('cat-name-input').value.trim();
   if(!name){ alert('Name required'); return; }
-  monthData().categories.push({id:uid(),name,items:[]});
+  const budget=parseFloat(document.getElementById('cat-budget-input').value)||0;
+  const editId=document.getElementById('edit-cat-id-modal').value;
+  const md=monthData();
+  if(editId){
+    const cat=md.categories.find(c=>c.id===editId);
+    if(cat){ cat.name=name; cat.budget=budget; }
+  } else {
+    md.categories.push({id:uid(),name,budget,items:[]});
+  }
   document.getElementById('cat-name-input').value='';
   closeModal('add-category-modal'); render();
 }
+// keep old name for toolbar button
+function addCategory(){ openAddCat(); }
 
 function deleteCat(catId){
   const md=monthData();
