@@ -681,11 +681,10 @@ const SHORT_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct
 // ── DEFAULT TEMPLATE ──
 function defaultTemplate() {
   return [
-    { name:'For Baby', items:['Philips Milk Bottle','MeeMee Cleaner','Jhonson Wipes','Jhonson Baby Wash','Jhonson Baby Lotion','Jhonson Baby Oil','Jhonson Baby Powder'] },
-    { name:'For Alfina', items:['MeeMee Breast Pads','AZAH Maternity Pads','Sofy Sanitary Pads'] },
-    { name:'For Palwasha', items:['Philips Milk Bottle','Maggie','French Fries'] },
-    { name:'For Cleaning', items:['Dettol Wipes','Dettol Hand Wash','Dettol Sanitizer','Dettol Antiseptic'] },
-    { name:'For First Aid', items:['Cotton','Safety Pins','Adhesive Tape','Bandage'] },
+    { name:'Grocery', items:[] },
+    { name:'Home Utility', items:[] },
+    { name:'Treat', items:[] },
+    { name:'Personal Care', items:[] },
   ];
 }
 
@@ -693,7 +692,7 @@ function defaultTemplate() {
 // tmplOverride: pass a template array directly (avoids accessing `state` before init)
 function defaultMonthData(useTemplate=true, tmplOverride=null) {
   const d = {
-    budget: 15659.80,
+    budget: 15000.00,
     categories: [],
     bills: [], emis: [], savings: []
   };
@@ -710,7 +709,7 @@ function defaultMonthData(useTemplate=true, tmplOverride=null) {
 }
 
 function makeItem(name,price,platform){
-  return { id:uid(), name, platform:platform||'Amazon', status:'pending',
+  return { id:uid(), name, platform:platform||'Zepto', status:'pending',
     notes:'', qty:1, boughtDate:'', prices:{mrp:price,actual:price} };
 }
 
@@ -721,7 +720,7 @@ function defaultGlobalState(){
   const tmpl = defaultTemplate();
   const gs = {
     currentMonth: mk,
-    platforms: ['Amazon','Zepto','Swiggy Instamart','Blinkit','Direct Shop','Flipkart','JioMart','Other'],
+    platforms: ['Amazon','Zepto','Swiggy Instamart','Blinkit','Direct Shop','Flipkart','JioMart', 'DMart', 'MR.DIY','Other'],
     defaultTemplate: tmpl,
     months: {}
   };
