@@ -2,413 +2,473 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kharcha Tracker · ProWorkWay</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
-        rel="stylesheet">
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💸</text></svg>">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kharcha Tracker · ProWorkWay</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💸</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Google APIs for Drive integration -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://apis.google.com/js/api.js" async defer></script>
 </head>
 
 <body>
 
-    <!-- ═══════════════════════════════════
+  <!-- ═══════════════════════════════════
      AUTH SCREEN
      ═══════════════════════════════════ -->
-    <div id="auth-screen">
-        <div class="auth-box">
-            <div class="auth-logo">💸 Kharcha</div>
-            <div class="auth-tagline">Your personal expense tracker · ProWorkWay</div>
-            <div class="auth-tabs">
-                <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Login</button>
-                <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Register</button>
-            </div>
+  <div id="auth-screen">
+    <div class="auth-box">
+      <div class="auth-logo">💸 Kharcha</div>
+      <div class="auth-tagline">Your personal expense tracker · ProWorkWay</div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Login</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Register</button>
+      </div>
 
-            <div id="login-form" class="auth-form">
-                <div class="auth-fg">
-                    <label>Username or Email</label>
-                    <input type="text" id="l-ident" placeholder="username or email" autocomplete="username">
-                </div>
-                <div class="auth-fg">
-                    <label>Password</label>
-                    <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password"
-                        onkeydown="if(event.key==='Enter')doLogin()">
-                </div>
-                <div class="auth-err" id="login-err"></div>
-                <button class="auth-btn" onclick="doLogin()">Login →</button>
-            </div>
-
-            <div id="signup-form" class="auth-form" style="display:none">
-                <div class="auth-row">
-                    <div class="auth-fg">
-                        <label>Full Name *</label>
-                        <input type="text" id="r-name" placeholder="Rahul Sharma" autocomplete="name">
-                    </div>
-                    <div class="auth-fg">
-                        <label>Username *</label>
-                        <input type="text" id="r-uname" placeholder="rahul123" autocomplete="username">
-                    </div>
-                </div>
-                <div class="auth-fg">
-                    <label>Email Address *</label>
-                    <input type="email" id="r-email" placeholder="rahul@example.com" autocomplete="email">
-                </div>
-                <div class="auth-fg">
-                    <label>Mobile Number *</label>
-                    <input type="tel" id="r-mobile" placeholder="+91 98765 43210" autocomplete="tel">
-                </div>
-                <div class="auth-row">
-                    <div class="auth-fg">
-                        <label>Password *</label>
-                        <input type="password" id="r-pass" placeholder="Min 6 chars" autocomplete="new-password">
-                    </div>
-                    <div class="auth-fg">
-                        <label>Confirm Password *</label>
-                        <input type="password" id="r-pass2" placeholder="Repeat" autocomplete="new-password"
-                            onkeydown="if(event.key==='Enter')doRegister()">
-                    </div>
-                </div>
-                <div class="auth-err" id="signup-err"></div>
-                <button class="auth-btn" onclick="doRegister()">Create Account →</button>
-            </div>
-
-            <div class="auth-switch" id="auth-switch-text">
-                Don't have an account? <span onclick="switchAuthTab('signup')">Register here</span>
-            </div>
+      <div id="login-form" class="auth-form">
+        <div class="auth-fg">
+          <label>Username or Email</label>
+          <input type="text" id="l-ident" placeholder="username or email" autocomplete="username">
         </div>
-    </div>
+        <div class="auth-fg">
+          <label>Password</label>
+          <input type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password"
+            onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <div class="auth-err" id="login-err"></div>
+        <button class="auth-btn" onclick="doLogin()">Login →</button>
+      </div>
 
-    <!-- ═══════════════════════════════════
+      <div id="signup-form" class="auth-form" style="display:none">
+        <div class="auth-row">
+          <div class="auth-fg">
+            <label>Full Name *</label>
+            <input type="text" id="r-name" placeholder="Rahul Sharma" autocomplete="name">
+          </div>
+          <div class="auth-fg">
+            <label>Username *</label>
+            <input type="text" id="r-uname" placeholder="rahul123" autocomplete="username">
+          </div>
+        </div>
+        <div class="auth-fg">
+          <label>Email Address *</label>
+          <input type="email" id="r-email" placeholder="rahul@example.com" autocomplete="email">
+        </div>
+        <div class="auth-fg">
+          <label>Mobile Number *</label>
+          <input type="tel" id="r-mobile" placeholder="+91 98765 43210" autocomplete="tel">
+        </div>
+        <div class="auth-row">
+          <div class="auth-fg">
+            <label>Password *</label>
+            <input type="password" id="r-pass" placeholder="Min 6 chars" autocomplete="new-password">
+          </div>
+          <div class="auth-fg">
+            <label>Confirm Password *</label>
+            <input type="password" id="r-pass2" placeholder="Repeat" autocomplete="new-password"
+              onkeydown="if(event.key==='Enter')doRegister()">
+          </div>
+        </div>
+        <div class="auth-err" id="signup-err"></div>
+        <button class="auth-btn" onclick="doRegister()">Create Account →</button>
+      </div>
+
+      <div class="auth-switch" id="auth-switch-text">
+        Don't have an account? <span onclick="switchAuthTab('signup')">Register here</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
      SESSION TIMEOUT OVERLAY
      ═══════════════════════════════════ -->
-    <div id="session-overlay">
-        <div class="session-box">
-            <div class="session-icon">🔒</div>
-            <div class="session-title">Session Timed Out</div>
-            <div class="session-sub" id="session-sub-text">You were inactive. Enter your password to continue.</div>
-            <div class="session-timer-bar">
-                <div class="session-timer-fill" id="session-timer-fill" style="width:100%"></div>
-            </div>
-            <div class="session-fg">
-                <label>Password</label>
-                <input type="password" id="session-pass" placeholder="Enter your password..."
-                    onkeydown="if(event.key==='Enter')unlockSession()">
-            </div>
-            <div class="session-err" id="session-err"></div>
-            <div class="session-btns">
-                <button class="session-unlock" onclick="unlockSession()">Unlock</button>
-                <button class="session-logout" onclick="doLogout()">Logout</button>
-            </div>
-        </div>
+  <div id="session-overlay">
+    <div class="session-box">
+      <div class="session-icon">🔒</div>
+      <div class="session-title">Session Timed Out</div>
+      <div class="session-sub" id="session-sub-text">You were inactive. Enter your password to continue.</div>
+      <div class="session-timer-bar">
+        <div class="session-timer-fill" id="session-timer-fill" style="width:100%"></div>
+      </div>
+      <div class="session-fg">
+        <label>Password</label>
+        <input type="password" id="session-pass" placeholder="Enter your password..."
+          onkeydown="if(event.key==='Enter')unlockSession()">
+      </div>
+      <div class="session-err" id="session-err"></div>
+      <div class="session-btns">
+        <button class="session-unlock" onclick="unlockSession()">Unlock</button>
+        <button class="session-logout" onclick="doLogout()">Logout</button>
+      </div>
     </div>
+  </div>
 
-    <!-- ═══════════════════════════════════
+  <!-- ═══════════════════════════════════
      MAIN APP
      ═══════════════════════════════════ -->
-    <div id="app-screen">
+  <div id="app-screen">
 
-        <!-- TOP BAR -->
-        <div class="topbar">
-            <div class="app-title">💸 Kharcha</div>
-            <div class="topbar-right">
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="app-title">💸 Kharcha</div>
+      <div class="topbar-right">
 
-                <!-- Theme Switcher -->
-                <div style="position:relative">
-                    <button class="theme-btn" onclick="toggleThemeDD(event)">🎨 Theme</button>
-                    <div class="theme-dropdown" id="theme-dd"></div>
-                </div>
-
-                <button class="privacy-btn" id="privacy-btn" onclick="togglePrivacy()" title="Toggle Privacy Mode">👁
-                    Privacy</button>
-
-                <div class="nav-tabs">
-                    <button class="nav-tab active" onclick="showPage('shopping',this)">🛒 <span>Shopping</span></button>
-                    <button class="nav-tab" onclick="showPage('bills',this)">💡 <span>Bills</span></button>
-                    <button class="nav-tab" onclick="showPage('reports',this)">📊 <span>Reports</span></button>
-                    <button class="nav-tab" onclick="openModal('settings-modal')">⚙</button>
-                </div>
-
-                <div class="user-pill" onclick="openModal('profile-modal')">
-                    <div class="user-avatar" id="user-avatar-top">?</div>
-                    <span id="user-name-top">User</span>
-                </div>
-            </div>
+        <!-- Theme Switcher -->
+        <div style="position:relative">
+          <button class="theme-btn" onclick="toggleThemeDD(event)">🎨 Theme</button>
+          <div class="theme-dropdown" id="theme-dd"></div>
         </div>
 
-        <!-- MONTH BAR -->
-        <div class="month-bar">
-            <span class="month-label">Month:</span>
-            <div class="month-select-group">
-                <button class="month-arrow" onclick="shiftMonth(-1)">‹</button>
-                <select id="month-sel" onchange="changeMonth()"></select>
-                <select id="year-sel" onchange="changeMonth()"></select>
-                <button class="month-arrow" onclick="shiftMonth(1)">›</button>
-            </div>
-            <button class="new-month-btn" onclick="createNewMonth()">+ New Month</button>
+        <button class="privacy-btn" id="privacy-btn" onclick="togglePrivacy()" title="Toggle Privacy Mode">👁
+          Privacy</button>
+
+        <div class="nav-tabs">
+          <button class="nav-tab active" onclick="showPage('shopping',this)">🛒 <span>Shopping</span></button>
+          <button class="nav-tab" onclick="showPage('bills',this)">💡 <span>Bills</span></button>
+          <button class="nav-tab" onclick="showPage('reports',this)">📊 <span>Reports</span></button>
+          <button class="nav-tab" onclick="openModal('settings-modal')">⚙</button>
         </div>
 
-        <!-- ── SHOPPING PAGE ── -->
-        <div class="page active" id="page-shopping">
-            <div class="overview-grid" id="ov-grid"></div>
-            <div class="toolbar">
-                <button class="btn primary" onclick="openModal('add-category-modal')">+ Category</button>
-                <button class="btn" onclick="openModal('budget-modal')">₹ Budget</button>
-                <button class="btn" onclick="exportData()">↓ Export</button>
-                <button class="btn" onclick="importData()">↑ Import</button>
-            </div>
-            <div class="filter-row">
-                <button class="ftab active" onclick="setFilter('all',this)">All</button>
-                <button class="ftab" onclick="setFilter('pending',this)">Pending</button>
-                <button class="ftab" onclick="setFilter('bought',this)">Bought ✓</button>
-                <button class="ftab" onclick="setFilter('cancelled',this)">Cancelled ✗</button>
-            </div>
-            <div class="categories" id="cat-container"></div>
+        <div class="user-pill" onclick="openModal('profile-modal')">
+          <div class="user-avatar" id="user-avatar-top">?</div>
+          <span id="user-name-top">User</span>
         </div>
+      </div>
+    </div>
 
-        <!-- ── BILLS PAGE ── -->
-        <div class="page" id="page-bills">
-            <div class="section-title">💡 Utility Bills <span class="stag">Monthly expenses</span></div>
-            <div class="toolbar">
-                <button class="btn gold-btn" onclick="openTrackModal('bill')">+ Add Bill</button>
-            </div>
-            <div class="tracks-grid" id="bills-container"></div>
-            <div class="sep"></div>
-            <div class="section-title">🏦 EMI <span class="stag">Loan repayments</span></div>
-            <div class="toolbar">
-                <button class="btn indigo-btn" onclick="openTrackModal('emi')">+ Add EMI</button>
-            </div>
-            <div class="tracks-grid" id="emi-container"></div>
-            <div class="sep"></div>
-            <div class="section-title">💚 Savings &amp; Transfers <span class="stag">Amount set aside</span></div>
-            <div class="toolbar">
-                <button class="btn emerald-btn" onclick="openTrackModal('saving')">+ Add Saving</button>
-            </div>
-            <div class="tracks-grid" id="savings-container"></div>
-        </div>
+    <!-- MONTH BAR -->
+    <div class="month-bar">
+      <span class="month-label">Month:</span>
+      <div class="month-select-group">
+        <button class="month-arrow" onclick="shiftMonth(-1)">‹</button>
+        <select id="month-sel" onchange="changeMonth()"></select>
+        <select id="year-sel" onchange="changeMonth()"></select>
+        <button class="month-arrow" onclick="shiftMonth(1)">›</button>
+      </div>
+      <button class="new-month-btn" onclick="createNewMonth()">+ New Month</button>
+    </div>
 
-        <!-- ── REPORTS PAGE ── -->
-        <div class="page" id="page-reports">
-            <div class="section-title">📊 Reports</div>
-            <div class="filter-row" style="margin-bottom:22px">
-                <button class="ftab active" onclick="setReportScope('month',this)">This Month</button>
-                <button class="ftab" onclick="setReportScope('all',this)">All Time</button>
-            </div>
-            <div id="reports-content"></div>
-        </div>
+    <!-- ── SHOPPING PAGE ── -->
+    <div class="page active" id="page-shopping">
+      <div class="overview-grid" id="ov-grid"></div>
+      <div class="toolbar">
+        <button class="btn primary" onclick="openModal('add-category-modal')">+ Category</button>
+        <button class="btn" onclick="openModal('budget-modal')">₹ Budget</button>
+        <button class="btn" onclick="exportData()">↓ JSON</button>
+        <button class="btn" onclick="importData()">↑ JSON</button>
+        <button class="btn emerald-btn" onclick="openModal('drive-modal')">☁ Drive</button>
+        <button class="btn gold-btn" onclick="printInvoice()">🖨 Invoice PDF</button>
+      </div>
+      <div class="filter-row">
+        <button class="ftab active" onclick="setFilter('all',this)">All</button>
+        <button class="ftab" onclick="setFilter('pending',this)">Pending</button>
+        <button class="ftab" onclick="setFilter('bought',this)">Bought ✓</button>
+        <button class="ftab" onclick="setFilter('cancelled',this)">Cancelled ✗</button>
+      </div>
+      <div class="categories" id="cat-container"></div>
+    </div>
 
-    </div><!-- /#app-screen -->
+    <!-- ── BILLS PAGE ── -->
+    <div class="page" id="page-bills">
+      <div class="section-title">💡 Utility Bills <span class="stag">Monthly expenses</span></div>
+      <div class="toolbar">
+        <button class="btn gold-btn" onclick="openTrackModal('bill')">+ Add Bill</button>
+      </div>
+      <div class="tracks-grid" id="bills-container"></div>
+      <div class="sep"></div>
+      <div class="section-title">🏦 EMI <span class="stag">Loan repayments</span></div>
+      <div class="toolbar">
+        <button class="btn indigo-btn" onclick="openTrackModal('emi')">+ Add EMI</button>
+      </div>
+      <div class="tracks-grid" id="emi-container"></div>
+      <div class="sep"></div>
+      <div class="section-title">💚 Savings &amp; Transfers <span class="stag">Amount set aside</span></div>
+      <div class="toolbar">
+        <button class="btn emerald-btn" onclick="openTrackModal('saving')">+ Add Saving</button>
+      </div>
+      <div class="tracks-grid" id="savings-container"></div>
+    </div>
 
-    <!-- ═══════════════════════════════════
+    <!-- ── REPORTS PAGE ── -->
+    <div class="page" id="page-reports">
+      <div class="section-title">📊 Reports</div>
+      <div class="filter-row" style="margin-bottom:22px">
+        <button class="ftab active" onclick="setReportScope('month',this)">This Month</button>
+        <button class="ftab" onclick="setReportScope('all',this)">All Time</button>
+      </div>
+      <div id="reports-content"></div>
+    </div>
+
+  </div><!-- /#app-screen -->
+
+  <!-- ═══════════════════════════════════
      MODALS
      ═══════════════════════════════════ -->
 
-    <!-- Profile -->
-    <div class="modal-overlay" id="profile-modal">
-        <div class="modal">
-            <h2>My Profile</h2>
-            <div id="profile-info"
-                style="margin-bottom:16px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:12px;line-height:2">
-            </div>
-            <div class="modal-actions">
-                <button class="btn" style="color:var(--rose);border-color:rgba(251,113,133,.3)"
-                    onclick="closeModal('profile-modal');doLogout()">Logout</button>
-                <button class="btn primary" onclick="closeModal('profile-modal')">Close</button>
-            </div>
-        </div>
+  <!-- Profile -->
+  <div class="modal-overlay" id="profile-modal">
+    <div class="modal">
+      <h2>My Profile</h2>
+      <div id="profile-info"
+        style="margin-bottom:16px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;font-size:12px;line-height:2">
+      </div>
+      <div class="modal-actions">
+        <button class="btn" style="color:var(--rose);border-color:rgba(251,113,133,.3)"
+          onclick="closeModal('profile-modal');doLogout()">Logout</button>
+        <button class="btn primary" onclick="closeModal('profile-modal')">Close</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Add / Edit Item -->
-    <div class="modal-overlay" id="add-item-modal">
-        <div class="modal">
-            <h2 id="item-modal-title">Add Item</h2>
-            <input type="hidden" id="ei-cat">
-            <input type="hidden" id="ei-item">
-            <div class="fg"><label>Item Name *</label><input type="text" id="ei-name" placeholder="e.g. Philips Bottle">
-            </div>
-            <div class="fg"><label>Platform</label><select id="ei-platform"></select></div>
-            <div class="fg"><label>Quantity</label><input type="number" id="ei-qty" value="1" min="1"></div>
-            <div class="fg">
-                <label>Prices (₹)</label>
-                <div class="price-grid2">
-                    <div><label style="font-size:9px;color:var(--muted)">MRP</label><input type="number" id="ei-mrp"
-                            placeholder="0"></div>
-                    <div><label style="font-size:9px;color:var(--muted)">Actual paid</label><input type="number"
-                            id="ei-actual" placeholder="0"></div>
-                </div>
-            </div>
-            <div class="fg"><label>Bought Date</label><input type="date" id="ei-date" style="color-scheme:dark"></div>
-            <div class="fg"><label>Notes</label><input type="text" id="ei-notes" placeholder="Optional"></div>
-            <div class="modal-actions">
-                <button class="btn" onclick="closeModal('add-item-modal')">Cancel</button>
-                <button class="btn primary" onclick="saveItem()">Save</button>
-            </div>
+  <!-- Add / Edit Item -->
+  <div class="modal-overlay" id="add-item-modal">
+    <div class="modal">
+      <h2 id="item-modal-title">Add Item</h2>
+      <input type="hidden" id="ei-cat">
+      <input type="hidden" id="ei-item">
+      <div class="fg"><label>Item Name *</label><input type="text" id="ei-name" placeholder="e.g. Philips Bottle"></div>
+      <div class="fg"><label>Platform</label><select id="ei-platform"></select></div>
+      <div class="fg"><label>Quantity</label><input type="number" id="ei-qty" value="1" min="1"></div>
+      <div class="fg">
+        <label>Prices (₹)</label>
+        <div class="price-grid2">
+          <div><label style="font-size:9px;color:var(--muted)">MRP</label><input type="number" id="ei-mrp"
+              placeholder="0"></div>
+          <div><label style="font-size:9px;color:var(--muted)">Actual paid</label><input type="number" id="ei-actual"
+              placeholder="0"></div>
         </div>
+      </div>
+      <div class="fg"><label>Bought Date</label><input type="date" id="ei-date" style="color-scheme:dark"></div>
+      <div class="fg"><label>Notes</label><input type="text" id="ei-notes" placeholder="Optional"></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal('add-item-modal')">Cancel</button>
+        <button class="btn primary" onclick="saveItem()">Save</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Toast -->
-    <div class="toast" id="toast">
-        <div class="toast-icon">⚠️</div>
-        <div class="toast-body">
-            <div class="toast-title" id="toast-title"></div>
-            <div class="toast-msg" id="toast-msg"></div>
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <div class="toast-icon">⚠️</div>
+    <div class="toast-body">
+      <div class="toast-title" id="toast-title"></div>
+      <div class="toast-msg" id="toast-msg"></div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Category -->
+  <div class="modal-overlay" id="add-category-modal">
+    <div class="modal">
+      <h2 id="cat-modal-title">Add Category</h2>
+      <input type="hidden" id="edit-cat-id-modal">
+      <div class="fg"><label>Category Name *</label><input type="text" id="cat-name-input" placeholder="e.g. For Baby">
+      </div>
+      <div class="fg">
+        <label>Category Budget (₹) <span style="color:var(--muted);font-size:9px">— optional, 0 = no
+            limit</span></label>
+        <input type="number" id="cat-budget-input" placeholder="0" step="0.01" min="0" value="0">
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal('add-category-modal')">Cancel</button>
+        <button class="btn primary" onclick="saveCategory()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Budget -->
+  <div class="modal-overlay" id="budget-modal">
+    <div class="modal">
+      <h2>Set Budget</h2>
+      <div class="fg"><label>Total Shopping Budget (₹)</label><input type="number" id="budget-inp" placeholder="15000"
+          step="0.01"></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal('budget-modal')">Cancel</button>
+        <button class="btn primary" onclick="saveBudget()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Track (Bill / EMI / Saving) -->
+  <div class="modal-overlay" id="track-modal">
+    <div class="modal">
+      <h2 id="track-modal-title">Add Bill</h2>
+      <input type="hidden" id="et-type">
+      <input type="hidden" id="et-id">
+      <div class="fg"><label>Name *</label><input type="text" id="et-name" placeholder="e.g. Electricity, Home Loan...">
+      </div>
+      <div class="fg"><label>Amount (₹) *</label><input type="number" id="et-amount" placeholder="0" step="0.01"></div>
+      <div class="fg" id="et-due-group"><label>Due Date</label><input type="text" id="et-due"
+          placeholder="e.g. 5th, 15th..."></div>
+      <div class="fg" id="et-bank-group"><label>Account / Bank</label><input type="text" id="et-bank"
+          placeholder="e.g. SBI, HDFC..."></div>
+      <div class="fg" id="et-emi-extra" style="display:none">
+        <label>Remaining EMIs</label><input type="number" id="et-remaining" placeholder="e.g. 18">
+      </div>
+      <div class="fg"><label>Notes</label><input type="text" id="et-notes" placeholder="Optional"></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal('track-modal')">Cancel</button>
+        <button class="btn primary" onclick="saveTrack()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Month -->
+  <div class="modal-overlay" id="new-month-modal">
+    <div class="modal">
+      <h2>Create New Month</h2>
+      <div class="fg"><label>Month</label>
+        <select id="nm-month">
+          <option value="0">January</option>
+          <option value="1">February</option>
+          <option value="2">March</option>
+          <option value="3">April</option>
+          <option value="4">May</option>
+          <option value="5">June</option>
+          <option value="6">July</option>
+          <option value="7">August</option>
+          <option value="8">September</option>
+          <option value="9">October</option>
+          <option value="10">November</option>
+          <option value="11">December</option>
+        </select>
+      </div>
+      <div class="fg"><label>Year</label><input type="number" id="nm-year" value="2025" min="2020" max="2035"></div>
+      <div class="fg">
+        <label>Copy Default Categories &amp; Items?</label>
+        <select id="nm-copy">
+          <option value="default">Yes — add default template</option>
+          <option value="none">No — start empty</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal('new-month-modal')">Cancel</button>
+        <button class="btn primary" onclick="confirmNewMonth()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal">
+      <h2>Settings</h2>
+      <div class="fg">
+        <label>Session Timeout</label>
+        <p style="font-size:10px;color:var(--muted);margin-bottom:8px">Screen locks after this many minutes of
+          inactivity.</p>
+        <div class="timeout-row">
+          <input type="number" id="timeout-minutes" min="1" max="60" value="5" onchange="saveTimeoutSetting()">
+          <span>minutes</span>
         </div>
-    </div>
-
-    <!-- Add / Edit Category -->
-    <div class="modal-overlay" id="add-category-modal">
-        <div class="modal">
-            <h2 id="cat-modal-title">Add Category</h2>
-            <input type="hidden" id="edit-cat-id-modal">
-            <div class="fg"><label>Category Name *</label><input type="text" id="cat-name-input"
-                    placeholder="e.g. For Baby"></div>
-            <div class="fg">
-                <label>Category Budget (₹) <span style="color:var(--muted);font-size:9px">— optional, 0 = no
-                        limit</span></label>
-                <input type="number" id="cat-budget-input" placeholder="0" step="0.01" min="0" value="0">
-            </div>
-            <div class="modal-actions">
-                <button class="btn" onclick="closeModal('add-category-modal')">Cancel</button>
-                <button class="btn primary" onclick="saveCategory()">Save</button>
-            </div>
+      </div>
+      <div class="sep"></div>
+      <div class="fg">
+        <label>Platforms</label>
+        <div class="chip-row" id="platform-chips"></div>
+        <div class="add-chip-row">
+          <input type="text" id="new-plat" placeholder="Add platform..."
+            onkeydown="if(event.key==='Enter')addPlatform()">
+          <button class="btn primary" onclick="addPlatform()">Add</button>
         </div>
+      </div>
+      <div class="sep"></div>
+      <div class="fg">
+        <label>Default Categories Template</label>
+        <p style="font-size:10px;color:var(--muted);margin-bottom:8px">These categories are auto-added when you create a
+          new month.</p>
+        <button class="btn" onclick="openModal('default-cats-modal')">Edit Template →</button>
+      </div>
+      <div class="modal-actions">
+        <button class="btn primary" onclick="closeModal('settings-modal')">Done</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Budget -->
-    <div class="modal-overlay" id="budget-modal">
-        <div class="modal">
-            <h2>Set Budget</h2>
-            <div class="fg"><label>Total Shopping Budget (₹)</label><input type="number" id="budget-inp"
-                    placeholder="15000" step="0.01"></div>
-            <div class="modal-actions">
-                <button class="btn" onclick="closeModal('budget-modal')">Cancel</button>
-                <button class="btn primary" onclick="saveBudget()">Save</button>
-            </div>
+  <!-- Default Template Editor -->
+  <div class="modal-overlay" id="default-cats-modal">
+    <div class="modal" style="max-width:520px">
+      <h2>Default Template</h2>
+      <p style="font-size:10px;color:var(--muted);margin-bottom:14px">Edit default categories with budget + items for
+        new months.</p>
+      <div id="template-editor"></div>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <input type="text" id="tmpl-cat-name" placeholder="New category name..."
+          style="flex:1;min-width:120px;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;outline:none;">
+        <input type="number" id="tmpl-cat-budget" placeholder="Budget ₹ (0=no limit)"
+          style="width:150px;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;outline:none;"
+          min="0" value="0">
+        <button class="btn primary" onclick="addTemplateCategory()">+ Category</button>
+      </div>
+      <div class="modal-actions">
+        <button class="btn primary" onclick="closeModal('default-cats-modal')">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Drive Modal -->
+  <div class="modal-overlay" id="drive-modal">
+    <div class="modal" style="max-width:440px">
+      <h2>☁ Google Drive Backup</h2>
+      <div id="drive-not-configured" style="display:block">
+        <p style="font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.7">
+          Apna Google OAuth Client ID daalein taaki backup seedha Drive mein save ho.<br>
+          <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:var(--accent)">Google
+            Cloud Console</a> se banayein.
+        </p>
+        <div class="fg">
+          <label>Google OAuth Client ID</label>
+          <input type="text" id="drive-client-id" placeholder="xxxx.apps.googleusercontent.com" style="font-size:11px">
         </div>
-    </div>
-
-    <!-- Track (Bill / EMI / Saving) -->
-    <div class="modal-overlay" id="track-modal">
-        <div class="modal">
-            <h2 id="track-modal-title">Add Bill</h2>
-            <input type="hidden" id="et-type">
-            <input type="hidden" id="et-id">
-            <div class="fg"><label>Name *</label><input type="text" id="et-name"
-                    placeholder="e.g. Electricity, Home Loan..."></div>
-            <div class="fg"><label>Amount (₹) *</label><input type="number" id="et-amount" placeholder="0" step="0.01">
-            </div>
-            <div class="fg" id="et-due-group"><label>Due Date</label><input type="text" id="et-due"
-                    placeholder="e.g. 5th, 15th..."></div>
-            <div class="fg" id="et-bank-group"><label>Account / Bank</label><input type="text" id="et-bank"
-                    placeholder="e.g. SBI, HDFC..."></div>
-            <div class="fg" id="et-emi-extra" style="display:none">
-                <label>Remaining EMIs</label><input type="number" id="et-remaining" placeholder="e.g. 18">
-            </div>
-            <div class="fg"><label>Notes</label><input type="text" id="et-notes" placeholder="Optional"></div>
-            <div class="modal-actions">
-                <button class="btn" onclick="closeModal('track-modal')">Cancel</button>
-                <button class="btn primary" onclick="saveTrack()">Save</button>
-            </div>
+        <div class="fg">
+          <label>App Name (Drive mein folder ka naam)</label>
+          <input type="text" id="drive-app-name" value="Kharcha Tracker">
         </div>
-    </div>
-
-    <!-- New Month -->
-    <div class="modal-overlay" id="new-month-modal">
-        <div class="modal">
-            <h2>Create New Month</h2>
-            <div class="fg"><label>Month</label>
-                <select id="nm-month">
-                    <option value="0">January</option>
-                    <option value="1">February</option>
-                    <option value="2">March</option>
-                    <option value="3">April</option>
-                    <option value="4">May</option>
-                    <option value="5">June</option>
-                    <option value="6">July</option>
-                    <option value="7">August</option>
-                    <option value="8">September</option>
-                    <option value="9">October</option>
-                    <option value="10">November</option>
-                    <option value="11">December</option>
-                </select>
-            </div>
-            <div class="fg"><label>Year</label><input type="number" id="nm-year" value="2025" min="2020" max="2035">
-            </div>
-            <div class="fg">
-                <label>Copy Default Categories &amp; Items?</label>
-                <select id="nm-copy">
-                    <option value="default">Yes — add default template</option>
-                    <option value="none">No — start empty</option>
-                </select>
-            </div>
-            <div class="modal-actions">
-                <button class="btn" onclick="closeModal('new-month-modal')">Cancel</button>
-                <button class="btn primary" onclick="confirmNewMonth()">Create</button>
-            </div>
+        <div class="modal-actions">
+          <button class="btn" onclick="closeModal('drive-modal')">Cancel</button>
+          <button class="btn primary" onclick="saveDriveConfig()">Save & Connect →</button>
         </div>
-    </div>
-
-    <!-- Settings -->
-    <div class="modal-overlay" id="settings-modal">
-        <div class="modal">
-            <h2>Settings</h2>
-            <div class="fg">
-                <label>Session Timeout</label>
-                <p style="font-size:10px;color:var(--muted);margin-bottom:8px">Screen locks after this many minutes of
-                    inactivity.</p>
-                <div class="timeout-row">
-                    <input type="number" id="timeout-minutes" min="1" max="60" value="5"
-                        onchange="saveTimeoutSetting()">
-                    <span>minutes</span>
-                </div>
-            </div>
-            <div class="sep"></div>
-            <div class="fg">
-                <label>Platforms</label>
-                <div class="chip-row" id="platform-chips"></div>
-                <div class="add-chip-row">
-                    <input type="text" id="new-plat" placeholder="Add platform..."
-                        onkeydown="if(event.key==='Enter')addPlatform()">
-                    <button class="btn primary" onclick="addPlatform()">Add</button>
-                </div>
-            </div>
-            <div class="sep"></div>
-            <div class="fg">
-                <label>Default Categories Template</label>
-                <p style="font-size:10px;color:var(--muted);margin-bottom:8px">These categories are auto-added when you
-                    create a new month.</p>
-                <button class="btn" onclick="openModal('default-cats-modal')">Edit Template →</button>
-            </div>
-            <div class="modal-actions">
-                <button class="btn primary" onclick="closeModal('settings-modal')">Done</button>
-            </div>
+      </div>
+      <div id="drive-connected" style="display:none">
+        <div id="drive-user-info"
+          style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;margin-bottom:16px">
+          <div style="font-size:24px">👤</div>
+          <div>
+            <div id="drive-user-name" style="font-size:13px;font-weight:600;color:var(--text)"></div>
+            <div id="drive-user-email" style="font-size:10px;color:var(--muted)"></div>
+          </div>
+          <button class="btn"
+            style="margin-left:auto;font-size:10px;color:var(--rose);border-color:rgba(251,113,133,.3)"
+            onclick="driveSignOut()">Sign Out</button>
         </div>
-    </div>
-
-    <!-- Default Template Editor -->
-    <div class="modal-overlay" id="default-cats-modal">
-        <div class="modal" style="max-width:520px">
-            <h2>Default Template</h2>
-            <p style="font-size:10px;color:var(--muted);margin-bottom:14px">Edit default categories with budget + items
-                for new months.</p>
-            <div id="template-editor"></div>
-            <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
-                <input type="text" id="tmpl-cat-name" placeholder="New category name..."
-                    style="flex:1;min-width:120px;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;outline:none;">
-                <input type="number" id="tmpl-cat-budget" placeholder="Budget ₹ (0=no limit)"
-                    style="width:150px;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:7px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;outline:none;"
-                    min="0" value="0">
-                <button class="btn primary" onclick="addTemplateCategory()">+ Category</button>
-            </div>
-            <div class="modal-actions">
-                <button class="btn primary" onclick="closeModal('default-cats-modal')">Done</button>
-            </div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+          <button class="btn emerald-btn" style="justify-content:center;padding:12px" onclick="driveBackup()">
+            ↑ &nbsp; Backup to Drive
+          </button>
+          <button class="btn indigo-btn" style="justify-content:center;padding:12px" onclick="driveRestore()">
+            ↓ &nbsp; Restore from Drive
+          </button>
         </div>
+        <div id="drive-status" style="font-size:11px;color:var(--muted);text-align:center;min-height:18px"></div>
+        <div style="margin-top:10px">
+          <button class="btn" style="font-size:10px;width:100%;justify-content:center" onclick="showDriveConfig()">⚙
+            Change Settings</button>
+        </div>
+      </div>
+      <div id="drive-signing-in" style="display:none;text-align:center;padding:20px">
+        <div style="font-size:28px;margin-bottom:10px">⏳</div>
+        <div style="font-size:12px;color:var(--muted)">Google se connect ho raha hai...</div>
+      </div>
     </div>
+  </div>
 
-    <script src="app.js"></script>
+  <!-- Invoice Print Frame (hidden, revealed on print) -->
+  <div id="invoice-print-area" style="display:none"></div>
+
+  <script src="app.js"></script>
 </body>
 
 </html>
