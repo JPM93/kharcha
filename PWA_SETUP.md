@@ -25,8 +25,8 @@ kharcha/
 ├── sw.js               ← Service Worker (offline + caching)
 ├── app.js              ← SW registration + install prompt
 ├── styles.css
-├── generate-icons.html ← Icons banane ka tool
 └── icons/              ← Yeh folder banao (step 1)
+    ├── generate-icons.html ← Icons banane ka tool
     ├── icon-72.png
     ├── icon-96.png
     ├── icon-128.png
@@ -41,7 +41,7 @@ kharcha/
 
 ## Step 1 — Icons Banao
 
-1. `generate-icons.html` browser mein kholo
+1. `icons/generate-icons.html` browser mein kholo
 2. **"⬇ Download All Icons"** click karo
 3. Saare icons download ho jayenge
 4. Project mein `icons/` folder banao
@@ -212,7 +212,7 @@ feat: add PWA support (manifest, service worker, install prompt)
   appinstalled event handler, shortcut URL (?page=) handler
 - index.html: manifest link, apple-mobile-web-app meta tags,
   theme-color, apple-touch-icon, description meta
-- generate-icons.html: canvas-based icon generator tool
+- icons/generate-icons.html: canvas-based icon generator tool
   for all 8 PWA icon sizes (72 to 512px), one-click download
 
 Enables: Add to Home Screen on Android/iOS, offline usage,
