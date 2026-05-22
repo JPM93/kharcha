@@ -1455,3 +1455,90 @@ function printInvoice() {
     setTimeout(() => { printArea.innerHTML = ''; }, 1000);
   }, 150);
 }
+
+// ════════════════════════════════════════════════════════
+// PWA — SERVICE WORKER REGISTRATION
+// ════════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => {
+        console.log('[Kharcha] SW registered, scope:', reg.scope);
+
+        // Check for updates every 60 seconds
+        setInterval(() => reg.update(), 60000);
+
+        // Notify user when new version available
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              showToast('Update Available!', 'Page reload karo naya version ke liye.');
+            }
+          });
+        });
+      })
+      .catch(err => console.warn('[Kharcha] SW registration failed:', err));
+  });
+}
+
+// ── PWA Install Prompt ────────────────────────────────────
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  // Show install button in topbar if not already installed
+  showPWAInstallBtn();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  hidePWAInstallBtn();
+  showToast('App Install Ho Gaya! 🎉', 'Kharcha ab home screen pe available hai.');
+});
+
+function showPWAInstallBtn() {
+  // Check if already shown
+  if (document.getElementById('pwa-install-btn')) return;
+  const btn = document.createElement('button');
+  btn.id = 'pwa-install-btn';
+  btn.className = 'btn emerald-btn';
+  btn.style.cssText = 'font-size:11px;padding:5px 10px;animation:pulse 2s infinite';
+  btn.textContent = '📲 Install App';
+  btn.onclick = triggerPWAInstall;
+  // Add to topbar-right
+  const topbarRight = document.querySelector('.topbar-right');
+  if (topbarRight) topbarRight.prepend(btn);
+}
+
+function hidePWAInstallBtn() {
+  document.getElementById('pwa-install-btn')?.remove();
+}
+
+async function triggerPWAInstall() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  console.log('[Kharcha] PWA install outcome:', outcome);
+  deferredInstallPrompt = null;
+  hidePWAInstallBtn();
+}
+
+// Handle shortcut URLs — ?page=shopping or ?page=bills
+(function handleShortcutURL() {
+  const params = new URLSearchParams(window.location.search);
+  const page = params.get('page');
+  if (page && ['shopping', 'bills', 'reports'].includes(page)) {
+    // Wait for app to render then switch page
+    const trySwitch = setInterval(() => {
+      const tab = document.querySelector(`.nav-tab[onclick*="'${page}'"]`);
+      if (tab) {
+        showPage(page, tab);
+        tab.classList.add('active');
+        clearInterval(trySwitch);
+      }
+    }, 200);
+    setTimeout(() => clearInterval(trySwitch), 3000);
+  }
+})();
