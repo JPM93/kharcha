@@ -99,7 +99,7 @@ function defaultTemplate() {
 
 function makeItem(name, price, platform) {
   return {
-    id: uid(), name, platform: platform || 'Zepto', status: 'pending',
+    id: uid(), name, platform: platform || 'Other', status: 'pending',
     notes: '', qty: 1, boughtDate: '', prices: { mrp: price, actual: price }
   };
 }
